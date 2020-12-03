@@ -1,0 +1,9 @@
+[submodule "3rd/stb"]
+	path = 3rd/stb
+	url = https://github.com/nothings/stb
+[submodule "3rd/sokol"]
+	path = 3rd/sokol
+	url = https://github.com/floooh/sokol
+[submodule "3rd/sokol-tools-bin"]
+	path = 3rd/sokol-tools-bin
+	url = https://github.com/floooh/sokol-tools-bin
