@@ -1,13 +1,13 @@
 ############# Shader Compiler ##################
 
-if(WIN32)
+if(CMAKE_HOST_WIN32)
   set(_hostPathPrefix win32)
-elseif(OSX)
+elseif(CMAKE_HOST_APPLE)
   set(_hostPathPrefix osx)
-elseif(UNIX)
+elseif(CMAKE_HOST_UNIX)
   set(_hostPathPrefix linux)
 else()
-  message(FATAL_ERROR "Unknown host platform.")
+  message(FATAL_ERROR "Unknown host platform: ${HOST_OS}")
 endif()
 
 #find_program(sokolCompiler NAMES sokol-shdc PATHS "${CMAKE_CURRENT_SOURCE_DIR}/sokol-tools-bin/bin/${_hostPathPrefix}" NO_DEFAULT_PATH)
