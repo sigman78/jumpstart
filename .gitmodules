@@ -16,3 +16,6 @@
 [submodule "3rd/magnum-singles"]
 	path = 3rd/magnum-singles
 	url = https://github.com/mosra/magnum-singles.git
+[submodule "3rd/doctest"]
+	path = 3rd/doctest
+	url = https://github.com/onqtam/doctest.git
