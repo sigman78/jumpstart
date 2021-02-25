@@ -1,0 +1,5 @@
+add_library(platformLib STATIC debug.cpp debug.h macros.h traits.h)
+#target_compile_definitions(platformLib PRIVATE SOKOL_GLCORE33 USE_DBG_UI)
+target_include_directories(platformLib PUBLIC .)
+target_link_libraries(platformLib PRIVATE sokolLib)
+target_compile_features(platformLib PRIVATE cxx_std_17)

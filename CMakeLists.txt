@@ -9,5 +9,6 @@ project(Jambiani LANGUAGES C CXX VERSION 0.0.1)
 
 add_subdirectory(3rd)
 add_subdirectory(src)
+add_subdirectory(test)
 
 #include(src/projects.cmake)

@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include "configure.h"
+#include "traits.h"
 #include <iosfwd>
+#include <string>
 #include <type_traits>
 #include <utility>
 
@@ -17,80 +20,85 @@ namespace Impl { struct SourceLocation; }
 
 class Debug {
 public:
+    using Op = void(Debug&);
 
-	using Op = *void(Debug&);
+    static void nosp(Debug& debug) {
+        debug._nosp = true;
+    }
 
-	static void nosp(Debug& debug) {
-		debug._nosp = true;
-	}
+    static void nonl(Debug& debug) {
+        debug._nonl = true;
+    }
 
-	static void nl(Debug& debug) {
-		debug << nosp << "\n" << nosp;
-	}
+    static void nl(Debug& debug) {
+        debug << nosp << "\n" << nosp;
+    }
 
-	static void sp(Debug& debug) {
-		debug << nosp << " " << nosp;
-	}
+    static void sp(Debug& debug) {
+        debug << nosp << " " << nosp;
+    }
 
-	Debug& operator<<(Op op) {
-		op(*this);
-		return *this;
-	}
+    Debug& operator<<(Op op) {
+        op(*this);
+        return *this;
+    }
 
-	static std::stream* systemOutput();
-	static std::stream* output();
+    static std::ostream* systemOutput();
+    static std::ostream* output();
 
-	Debug();
-	Debug(std::stream* output);
-	Debug(const Debug&) = delete;
-	Debug(Debug&&) = delete;
-	Debug& operator=(const Debug&) = delete;
-	Debug& operator=(Debug&&) = delete;
-	~Debug();
+    Debug();
+    Debug(std::ostream* output);
+    Debug(const Debug&) = delete;
+    Debug(Debug&&) = delete;
+    Debug& operator=(const Debug&) = delete;
+    Debug& operator=(Debug&&) = delete;
+    ~Debug();
 
-	Debug& operator<<(const char* str);
-	Debug& operator<<(const void* ptr);
-	Debug& operator<<(bool val);
-	Debug& operator<<(char val);
-	Debug& operator<<(unsigned char val);
-	Debug& operator<<(int val);
-	Debug& operator<<(long val);
-	Debug& operator<<(long long val);
-	Debug& operator<<(unsigned int val);
-	Debug& operator<<(unsigned long val);
-	Debug& operator<<(unsigned long long val);
+    Debug& operator<<(const char* str);
+    Debug& operator<<(const void* ptr);
+    Debug& operator<<(bool val);
+    Debug& operator<<(char val);
+    Debug& operator<<(unsigned char val);
+    Debug& operator<<(int val);
+    Debug& operator<<(long val);
+    Debug& operator<<(long long val);
+    Debug& operator<<(unsigned int val);
+    Debug& operator<<(unsigned long val);
+    Debug& operator<<(unsigned long long val);
 
-	Debug& operator<<(float val);
-	Debug& operator<<(double val);
+    Debug& operator<<(float val);
+    Debug& operator<<(double val);
 
-	Debug& operator<<(std::nullptr_t);
+    Debug& operator<<(std::nullptr_t);
 
-private:
-	template<typename T> Debug& print(const T& value);
+    template<typename T> Debug& print(const T& value);
+protected:
 
-	std::ostream* _output;
-	std::ostream* _previousGlobalOutput;
+    std::ostream* _output;
+    std::ostream* _previousGlobalOutput;
 
-	void cleanup();
+    void cleanup();
 
 #ifdef PLATFORM_DEBUG_HAS_SOURCE_LOCATION
-	friend Impl::SourceLocation;
+    friend Impl::SourceLocation;
     const char* _sourceLocationFile{};
     int _sourceLocationLine{};
 #endif
-	bool _nosp{};
+    bool _nosp{};
+    bool _nonl{};
+    bool _printed{};
 };
 
 #ifdef PLATFORM_DEBUG_HAS_SOURCE_LOCATION
 namespace Impl {
-	struct SourceLocation {
+    struct SourceLocation {
         #if defined(__GNUC__) || defined(__clang__) || defined(_MSC_VER)
-		SourceLocation(Debug&& debug, const char* file = __builtin_FILE(), int line = __builtin_LINE());
-		#else
-		#error Unsupported compiler
-		#endif
-		Debug* debug;
-	};
+        SourceLocation(Debug&& debug, const char* file = __builtin_FILE(), int line = __builtin_LINE());
+        #else
+        #error Inconsistent PLATFORM_DEBUG_HAS_SOURCE_LOCATION
+        #endif
+        Debug* debug;
+    };
 }
 
 inline Debug& operator!(Impl::SourceLocation loc) {
@@ -98,31 +106,88 @@ inline Debug& operator!(Impl::SourceLocation loc) {
 }
 #else
 inline Debug& operator!(Debug&& debug) { 
-	return debug; 
+    return debug; 
 }
 #endif
-
-// Main workhorse
-template<typename T> inline Debug& operator<<(Debug&& debug, const T& value) {
-    return debug << value;
-}
-
-// Iterable impl
-// TODO:
 
 // Warning output
 class Warning: public Debug {
 public:
-	static std::ostream* systemOutput();
-	static std::ostream* output();
+    static std::ostream* systemOutput();
+    static std::ostream* output();
 
-	Warning();
-	Warning(std::ostream* output);
-	Warning(const Warning&) = delete;
-	Warning(Warning&&) = delete;
-	Warning& operator=(const Warning&) = delete;
-	Warning& operator=(Warning&&) = delete;
-	~Warning();
+    Warning();
+    Warning(std::ostream* output);
+    Warning(const Warning&) = delete;
+    Warning(Warning&&) = delete;
+    Warning& operator=(const Warning&) = delete;
+    Warning& operator=(Warning&&) = delete;
+    ~Warning();
+
+private:
+    std::ostream* _previousGlobalWarningOutput{};
 };
 
+
+// Error output
+class Error: public Debug {
+public:
+    static std::ostream* systemOutput();
+    static std::ostream* output();
+
+    Error();
+    Error(std::ostream* output);
+    Error(const Error&) = delete;
+    Error(Error&&) = delete;
+    Error& operator=(const Error&) = delete;
+    Error& operator=(Error&&) = delete;
+    ~Error();
+
+private:
+    std::ostream* _previousGlobalErrorOutput{};
+};
+
+namespace Impl {
+
+struct OutputFallback {
+    template<class T> OutputFallback(const T& t): applier(&OutputFallback::makeApply<T>), value(&t) {}
+
+    void apply(std::ostream& s) const {
+        (this->*applier)(s);
+    }
+
+    template<class T> void makeApply(std::ostream& s) const {
+        s << *static_cast<const T*>(value);
+    }
+
+    using Fn = void(OutputFallback::*)(std::ostream&) const;
+    const Fn applier;
+    const void* value;
+};
+
+} // Impl
+
+Debug& operator<<(Debug& d, Impl::OutputFallback&& val);
+
+template<typename T, typename U> Debug& operator<<(Debug& debug, const std::pair<T,U>& val) {
+    debug << "(" << Debug::nosp << val.first << ", " << val.second << ")";
+    return debug;
 }
+
+template<typename Iterable> Debug& operator<<(typename std::enable_if<IsIterable<Iterable>::value && !IsString<Iterable>::value, Debug&>::type debug, const Iterable& val) {
+    // Nested containers may need additional work wrt format flags
+    debug << "{" << Debug::nosp;
+    for(auto it = val.begin(); it != val.end(); ++it) {
+        if (it != val.begin())
+            debug << "," << Debug::sp;
+        debug << *it;
+    }
+    debug << "}";
+    return debug;
+}
+
+template<typename T> inline Debug& operator<<(Debug&& debug, const T& value) {
+    return debug << value;
+}
+
+} // Platform
