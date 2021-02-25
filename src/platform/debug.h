@@ -6,7 +6,6 @@
 #include "configure.h"
 #include "traits.h"
 #include <iosfwd>
-#include <string>
 #include <type_traits>
 #include <utility>
 
