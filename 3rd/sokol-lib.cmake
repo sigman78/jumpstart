@@ -52,6 +52,9 @@ else()
 message(FATAL_ERROR "Unsupported platform: ${BUILD_OS}")
 endif()
 
+# TODO: Move outside
+target_include_directories(sokolLib PUBLIC "${PLATFORM_CONFIG_DIR}")
+
 #set_target_properties(sokolLib PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/sokol/;${CMAKE_CURRENT_SOURCE_DIR}/sokol/util/")
 #add_library(sokol::lib ALIAS _sokolLib)
 

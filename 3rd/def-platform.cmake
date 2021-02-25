@@ -44,7 +44,9 @@ platform_os_define(BUILD_OS_MOBILE		PLATFORM_TARGET_MOBILE)
 platform_os_define(BUILD_OS_EMSCRIPTEN	PLATFORM_TARGET_EMSCRIPTEN)
 platform_os_define(BUILD_OS_WEB			PLATFORM_TARGET_WEB)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+set(PLATFORM_CONFIG_DIR "${CMAKE_BINARY_DIR}/gen")
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake ${PLATFORM_CONFIG_DIR}/configure.h)
 
 
 
