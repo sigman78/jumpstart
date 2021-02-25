@@ -19,4 +19,8 @@ target_include_directories(imguiLib SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR
 
 include(sokol-lib.cmake)
 include(sokol-compiler.cmake)
-add_subdirectory(glm)
+
+add_subdirectory(glm EXCLUDE_FROM_ALL)
+
+add_subdirectory(doctest EXCLUDE_FROM_ALL)
+

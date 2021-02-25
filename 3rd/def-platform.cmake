@@ -26,4 +26,27 @@ else()
 endif()
 
 # generate defines
+macro(platform_os_define _Check _Def)
+	if(BUILD_OS IN_LIST ${_Check})
+		set(${_Def} 1)
+	endif()
+endmacro()
+
+platform_os_define(BUILD_OS_ANDROID		PLATFORM_TARGET_ANDROID)
+platform_os_define(BUILD_OS_IOS			PLATFORM_TARGET_IOS)
+platform_os_define(BUILD_OS_APPLE		PLATFORM_TARGET_APPLE)
+platform_os_define(BUILD_OS_MACOS		PLATFORM_TARGET_MACOS)
+platform_os_define(BUILD_OS_WINDOWS		PLATFORM_TARGET_WINDOWS)
+platform_os_define(BUILD_OS_LINUX		PLATFORM_TARGET_LINUX)
+platform_os_define(BUILD_OS_LINUX_LIKE	PLATFORM_TARGET_LINUX_LIKE)
+platform_os_define(BUILD_OS_DESKTOP		PLATFORM_TARGET_DESKTOP)
+platform_os_define(BUILD_OS_MOBILE		PLATFORM_TARGET_MOBILE)
+platform_os_define(BUILD_OS_EMSCRIPTEN	PLATFORM_TARGET_EMSCRIPTEN)
+platform_os_define(BUILD_OS_WEB			PLATFORM_TARGET_WEB)
+
+set(PLATFORM_CONFIG_DIR "${CMAKE_BINARY_DIR}/gen")
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake ${PLATFORM_CONFIG_DIR}/configure.h)
+
+
 
