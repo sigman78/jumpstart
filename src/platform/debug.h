@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "configure.h"
+#include "defines.h"
 #include "traits.h"
 #include <iosfwd>
 #include <type_traits>
