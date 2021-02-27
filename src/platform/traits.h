@@ -5,7 +5,7 @@
 
 #include <type_traits>
 
-#include "configure.h"
+#include "defines.h"
 
 namespace Platform {
 

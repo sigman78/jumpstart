@@ -10,27 +10,10 @@
 #include <iomanip>
 #include <sstream>
 
-/* For isatty() on Unix-like systems */
-#ifdef PLATFORM_TARGET_LINUX
-#include <unistd.h>
-
-/* Node.js alternative to isatty() on Emscripten */
-#elif defined(PLATFORM_TARGET_EMSCRIPTEN)
-#include <emscripten.h>
-
-#elif defined(PLATFORM_TARGET_WINDOWS)
+#if defined(PLATFORM_TARGET_WINDOWS)
 #define WIN32_LEAN_AND_MEAN 1
 #define VC_EXTRALEAN
-
-/* For isatty() on Windows */
-#ifdef PLATFORM_USE_ANSICOLORS
-#include <io.h>
-
-/* WINAPI-based colored output on Windows */
-#else
 #include <windows.h>
-#include <wincon.h>
-#endif
 #endif
 
 namespace Platform {
@@ -160,11 +143,12 @@ Error::Error(): Error(debugGlobals.errorOutput) {}
 void Debug::cleanup() {
     #ifdef PLATFORM_DEBUG_HAS_SOURCE_LOCATION
     if(_output && _sourceLocationFile) {
-        *_output << _sourceLocationFile << ":" << _sourceLocationLine;
+        *_output << _sourceLocationFile << " (" << _sourceLocationLine << ") :";
+        _printed = true;
     }
     #endif
 
-    if(_output && not _nonl) {
+    if(_output && not _nonl && _printed) {
         *_output << std::endl;
     }
 
@@ -199,8 +183,9 @@ Debug& Debug::print(const T& val) {
 
     #ifdef PLATFORM_DEBUG_HAS_SOURCE_LOCATION
     if(_sourceLocationFile) {
-        *_output << _sourceLocationFile << ":" << _sourceLocationLine << " ";
+        *_output << _sourceLocationFile << " (" << _sourceLocationLine << ") :";
         _sourceLocationFile = nullptr;
+        _printed = true;
     }
     #endif
 

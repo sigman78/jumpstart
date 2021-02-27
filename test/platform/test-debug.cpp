@@ -1,9 +1,9 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
-#include <debug.h>
+
+#include "platform/debug.h"
 
 #include <iostream>
-
+#include <sstream>
 #include <vector>
 #include <map>
 
@@ -16,7 +16,15 @@ TEST_CASE("basic output") {
     {
         std::ostringstream out;
         !Platform::Debug(&out) << "1. 2. 3. Fail!"; // fix if line moved :)
-        CHECK(out.str() == __FILE__  ":18 " "1. 2. 3. Fail!\n");
+        CHECK(out.str() == __FILE__  " (18) : " "1. 2. 3. Fail!\n");
+    }
+}
+
+TEST_CASE("only line number") {
+    {
+        std::ostringstream out;
+        !Platform::Debug{&out};
+        CHECK(out.str() == __FILE__ " (26) :\n");
     }
 }
 
@@ -42,9 +50,10 @@ TEST_CASE("basic types sanity") {
 }
 
 TEST_CASE("functionality") {
-    Platform::Debug() << "Hello" << "world" << Platform::Debug::nosp << "!";
-    Platform::Warning() << "You've got" << 1 << "problem.";
-    Platform::Error() << "And you have to stop" << "!";
+    std::ostringstream null;
+    Platform::Debug(&null) << "Hello" << "world" << Platform::Debug::nosp << "!";
+    Platform::Warning(&null) << "You've got" << 1 << "problem.";
+    Platform::Error(&null) << "And you have to stop" << "!";
 }
 
 TEST_CASE("spaced output") {
