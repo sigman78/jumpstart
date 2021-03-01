@@ -37,10 +37,18 @@ add_library(sokolLib STATIC)
 target_compile_definitions(sokolLib PUBLIC SOKOL_GLCORE33 USE_DBG_UI)
 target_include_directories(sokolLib SYSTEM PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/sokol" "${CMAKE_CURRENT_SOURCE_DIR}/sokol/util")
 
+if(BUILD_OS IN_LIST BUILD_OS_APPLE)
+set(SOKOL_IMPL_SRC "${PLATFORM_CONFIG_DIR}/sokol_lib_impl.mm")
+else()
+set(SOKOL_IMPL_SRC "${PLATFORM_CONFIG_DIR}/sokol_lib_impl.cpp")
+endif()
+
+configure_file("sokol-misc/sokol_impl.cpp" ${SOKOL_IMPL_SRC})
+
 if(BUILD_OS IN_LIST BUILD_OS_WINDOWS)
-target_sources(sokolLib PRIVATE sokol-misc/sokol-lib.cpp)
+target_sources(sokolLib PRIVATE ${SOKOL_IMPL_SRC})
 elseif(BUILD_OS IN_LIST BUILD_OS_APPLE)
-target_sources(sokolLib PRIVATE sokol-misc/sokol-lib.mm)
+target_sources(sokolLib PRIVATE ${SOKOL_IMPL_SRC})
 #set(SOKOL_IOS_FRAMEWORKS UIKit OpenGLES GLKit AudioToolbox)
 set(SOKOL_OSX_FRAMEWORKS Cocoa QuartzCore OpenGL Metal MetalKit AudioToolbox)
 foreach(_framework ${SOKOL_OSX_FRAMEWORKS})
@@ -52,8 +60,10 @@ else()
 message(FATAL_ERROR "Unsupported platform: ${BUILD_OS}")
 endif()
 
+target_link_libraries(sokolLib PRIVATE platformLib)
+
 # TODO: Move outside
-target_include_directories(sokolLib PUBLIC "${PLATFORM_CONFIG_DIR}")
+# target_include_directories(sokolLib PUBLIC "${PLATFORM_CONFIG_DIR}")
 
 #set_target_properties(sokolLib PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/sokol/;${CMAKE_CURRENT_SOURCE_DIR}/sokol/util/")
 #add_library(sokol::lib ALIAS _sokolLib)
