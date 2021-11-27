@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "defines.h"
+#include "platform/defines.h"
 
 #include "platform/debug.h"
 #include "platform/macros.h"

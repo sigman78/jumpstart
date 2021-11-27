@@ -2,7 +2,7 @@
 //
 #pragma once
 
-#include "defines.h"
+#include "platform/defines.h"
 
 #define _IMPL_MACRO_CONCAT(a, b) a ## b
 #define _MACRO_CONCAT(a, b) _IMPL_MACRO_CONCAT(a, b)
@@ -81,6 +81,7 @@
 #define PLATFORM_LINE_STRING _LINE_STRING_IMPLEMENTATION(__LINE__)
 
 // Like possibly more convenient to debug version of std::abort()
+// Ref: https://github.com/biojppm/debugbreak
 #ifndef PLATFORM_ABORT
 #ifndef __has_builtin
   #define __has_builtin(x) 0

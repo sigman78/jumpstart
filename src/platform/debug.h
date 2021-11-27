@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "defines.h"
-#include "traits.h"
+#include "platform/defines.h"
+#include "platform/traits.h"
 #include <iosfwd>
 #include <type_traits>
 #include <utility>

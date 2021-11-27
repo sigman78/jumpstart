@@ -1,8 +1,8 @@
 //
 //
 
-#include "debug.h"
-#include "macros.h"
+#include "platform/debug.h"
+#include "platform/macros.h"
 
 #include <cstdlib>
 #include <cstdint>
