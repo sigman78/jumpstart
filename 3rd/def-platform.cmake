@@ -25,6 +25,6 @@ else()
     message(FATAL_ERROR "Unsupported host os: ${HOST_OS}")
 endif()
 
-
+set(PLATFORM_CONFIG_DIR "${CMAKE_BINARY_DIR}/gen")
 
 

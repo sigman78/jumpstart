@@ -10,7 +10,7 @@
 TEST_CASE("assert compile test") {
     // should compile and run
     int val = 1;
-    PLATFORM_ASSERT(val == 1, "This should not fail",);
+    PLATFORM_ASSERT(val == 1, "This should not fail");
 
     switch(val) {
         case 1:

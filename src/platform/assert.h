@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "defines.h"
+#include "platform/defines.h"
 
 #include "platform/debug.h"
 #include "platform/macros.h"
@@ -16,21 +16,21 @@
 
 #ifndef PLATFORM_ASSERT
 #if defined(PLATFORM_NO_ASSERT) || (defined(PLATFORM_STANDARD_ASSERT) && defined(NDEBUG))
-#define PLATFORM_ASSERT(expr, msg, val) do {} while(0)
+#define PLATFORM_ASSERT(expr, msg) do {} while(0)
 #elif defined(PLATFORM_STANDARD_ASSERT)
-#define PLATFORM_ASSERT(expr, msg, val) assert(expr)
+#define PLATFORM_ASSERT(expr, msg) assert(expr)
 #else
-#define PLATFORM_ASSERT(expr, msg, val) \
+#define PLATFORM_ASSERT(expr, msg) \
 do { \
     if(!(expr)) { \
         {!Platform::Error{Platform::Error::systemOutput()} << "ASSERT("#expr"):" << msg;} \
         PLATFORM_ABORT(); \
-        return val; \
     } \
 } while(0) \
 /* */
 #endif
 #endif
+
 
 // PLATFORM_ASSERT_UNREACHABLE  - mark unreachable code
 #ifndef PLATFORM_ASSERT_UNREACHABLE
