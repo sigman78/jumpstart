@@ -1,6 +1,9 @@
 /build*
 /debian
 /obj-*
+/.vs
+/out
+CMakeSettings.json
 pkg
 *.kdev4
 *~
